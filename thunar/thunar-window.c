@@ -715,6 +715,7 @@ thunar_window_init (ThunarWindow *window)
   GtkWidget       *item;
   GtkAction       *action;
   gboolean         last_show_hidden;
+  gchar           *last_directory;
   gboolean         last_menubar_visible;
   GSList          *group;
   gchar           *last_location_bar;
@@ -750,6 +751,7 @@ thunar_window_init (ThunarWindow *window)
                 "last-side-pane", &last_side_pane,
                 "last-statusbar-visible", &last_statusbar_visible,
                 "misc-small-toolbar-icons", &small_icons,
+                "last-directory",&last_directory,
                 NULL);
 
   /* set up a handler to confirm exit when there are multiple tabs open  */
@@ -3454,10 +3456,35 @@ thunar_window_current_directory_changed (ThunarFile   *current_directory,
   gboolean      show_full_path;
   gchar        *parse_name = NULL;
   const gchar  *name;
+  char         *filename,*home_dir,*filepath;
+  FILE         *myFile;
 
   _thunar_return_if_fail (THUNAR_IS_WINDOW (window));
   _thunar_return_if_fail (THUNAR_IS_FILE (current_directory));
   _thunar_return_if_fail (window->current_directory == current_directory);
+
+  /* -------------------- */
+
+    filename = "/.config/Thunar/dir.log";
+    name = parse_name = g_file_get_parse_name (thunar_file_get_file (current_directory));
+
+    home_dir = getenv("HOME");
+    filepath = malloc(strlen(home_dir) + strlen(filename) + 1);
+    strncpy(filepath, home_dir, strlen(home_dir) + 1);
+    strncat(filepath, filename, strlen(filename) + 1);
+    printf("%s\n", filepath);
+
+    myFile = fopen(filepath, "w");
+    fwrite(name, 1, strlen(name), myFile);
+    fclose(myFile);
+    free(filepath);
+
+  /* ----------------------- */
+
+  /* set directory */
+  g_object_set (G_OBJECT (window->preferences), "last-directory", parse_name , NULL);
+
+
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
   /* update the "Empty Trash" action */
@@ -3468,16 +3495,26 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 
   /* get name of directory or full path */
   g_object_get (G_OBJECT (window->preferences), "misc-full-path-in-title", &show_full_path, NULL);
+  /* BELKA CHANGES STARTS 
+  
   if (G_UNLIKELY (show_full_path))
     name = parse_name = g_file_get_parse_name (thunar_file_get_file (current_directory));
   else
     name = thunar_file_get_display_name (current_directory);
+*/
+
+
+
+
+
+  /* BELKA CHANGES ENDS */
 
   /* set window title */
   title = g_strdup_printf ("%s - %s", name, _("File Manager"));
   gtk_window_set_title (GTK_WINDOW (window), title);
   g_free (title);
   g_free (parse_name);
+
 
   /* set window icon */
   thunar_window_update_window_icon (window);

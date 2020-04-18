@@ -1101,6 +1101,9 @@ thunar_path_entry_parse (ThunarPathEntry *path_entry,
         }
     }
 
+/* store here */
+
+
   /* release the filename */
   g_free (filename);
 

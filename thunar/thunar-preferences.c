@@ -72,6 +72,7 @@ enum
   PROP_LAST_WINDOW_HEIGHT,
   PROP_LAST_WINDOW_WIDTH,
   PROP_LAST_WINDOW_FULLSCREEN,
+  PROP_LAST_DIRECTORY,
   PROP_MISC_ALWAYS_SHOW_TABS,
   PROP_MISC_VOLUME_MANAGEMENT,
   PROP_MISC_CASE_SENSITIVE,
@@ -448,6 +449,22 @@ thunar_preferences_class_init (ThunarPreferencesClass *klass)
                             NULL,
                             FALSE,
                             EXO_PARAM_READWRITE);
+
+
+  /**
+   * ThunarPreferences:last-directory:
+   *
+   * last entered directory
+   *
+   **/
+  preferences_props[PROP_LAST_DIRECTORY] =
+      g_param_spec_string ("last-directory",
+                           "LastDirectory",
+                           NULL,
+                           "- ",
+                           EXO_PARAM_READWRITE);
+
+
 
   /**
    * ThunarPreferences:misc-always-show-tabs:
@@ -828,6 +845,7 @@ thunar_preferences_class_init (ThunarPreferencesClass *klass)
                             NULL,
                             TRUE,
                             EXO_PARAM_READWRITE);
+                            
 
   /**
    * ThunarPreferences:tree-icon-size:
@@ -842,6 +860,11 @@ thunar_preferences_class_init (ThunarPreferencesClass *klass)
                          THUNAR_TYPE_ICON_SIZE,
                          THUNAR_ICON_SIZE_16,
                          EXO_PARAM_READWRITE);
+
+
+
+
+
 
   /* install all properties */
   g_object_class_install_properties (gobject_class, N_PROPERTIES, preferences_props);
